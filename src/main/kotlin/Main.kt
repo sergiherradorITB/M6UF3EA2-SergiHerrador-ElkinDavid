@@ -45,8 +45,12 @@ fun exercici1(coll: MongoCollection<Document>) {
     val jsonFile = File("src/main/JSON/products.json")
     println(jsonFile.absolutePath)
 
+    //Creem una llista buida per emmagatzrmas strings
     var jsonDocuments: MutableList<String> = mutableListOf()
+    // Inicialitsem un contador
     var nRegistros = 0
+
+    // Afegirem cada linea del fitxer json a la llista buida d'abans, i cada 1000 registres el que farem es pujarlo a la DB
     jsonFile.forEachLine {
         jsonDocuments.add(it)
 
@@ -58,6 +62,7 @@ fun exercici1(coll: MongoCollection<Document>) {
             jsonDocuments = mutableListOf()
         }
     }
+    // Per controlar que no falta cap rellistre farem una ultima pujada de la llista
     coll.insertMany(jsonDocuments.map { Document.parse(it) })
 
 

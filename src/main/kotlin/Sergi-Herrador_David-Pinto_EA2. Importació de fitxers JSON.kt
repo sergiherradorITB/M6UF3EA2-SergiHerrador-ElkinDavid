@@ -25,8 +25,8 @@ fun main() {
         val coll: MongoCollection<Document> = db.getCollection("productes")
         val collRestaurants: MongoCollection<Document> = db.getCollection("restaurants")
 
-        exercici1(coll)
-        exercici2(collRestaurants)
+        afegirProductes(coll)
+        afegirRestaurants(collRestaurants)
         // Control de errors.
     } catch (e: MongoTimeoutException) {
         println("No arribem a la base de dades")
@@ -40,42 +40,18 @@ fun main() {
     }
 }
 
-fun exercici1(coll: MongoCollection<Document>) {
-    // Lectura del archivo JSON
-    val jsonFile = File("src/main/JSON/products.json")
-    println(jsonFile.absolutePath)
-
-    //Creem una llista buida per emmagatzrmas strings
-    var jsonDocuments: MutableList<String> = mutableListOf()
-    // Inicialitsem un contador
-    var nRegistros = 0
-
-    // Afegirem cada linea del fitxer json a la llista buida d'abans, i cada 1000 registres el que farem es pujarlo a la DB
-    jsonFile.forEachLine {
-        jsonDocuments.add(it)
-
-        nRegistros++
-
-        if (nRegistros == 1000) {
-            coll.insertMany(jsonDocuments.map { Document.parse(it) })
-            nRegistros = 0
-            jsonDocuments = mutableListOf()
-        }
-    }
-    // Per controlar que no falta cap rellistre farem una ultima pujada de la llista
-    coll.insertMany(jsonDocuments.map { Document.parse(it) })
-
-
-}
-
-fun exercici2(coll: MongoCollection<Document>) {
+// Afegim els productes del document products.json a la db
+fun afegirProductes(coll: MongoCollection<Document>) {
     // Lectura del archivo JSON
     val jsonFile = File("src/main/JSON/restaurants.json")
     println(jsonFile.absolutePath)
 
+    // Creem llista buida i un contador
     var jsonDocuments: MutableList<String> = mutableListOf()
-
     var nRegistros = 0
+
+    // Per cada linea del fitxer json la llegim i la afegim a la llista d'abans.
+    // Y cada 1000 registres fem una pujada al la db per evitar sobrecarregar la memoria.
     jsonFile.forEachLine {
         jsonDocuments.add(it)
 
@@ -87,5 +63,36 @@ fun exercici2(coll: MongoCollection<Document>) {
             jsonDocuments = mutableListOf()
         }
     }
+
+    // Fem una ultima pujada per asegurar que no queda cap registre sense pujar.
+    coll.insertMany(jsonDocuments.map { Document.parse(it) })
+}
+
+
+// Afegim els productes del document restaurants.json a la db
+fun afegirRestaurants(coll: MongoCollection<Document>) {
+    // Lectura del archivo JSON
+    val jsonFile = File("src/main/JSON/restaurants.json")
+    println(jsonFile.absolutePath)
+
+    // Creem llista buida i un contador
+    var jsonDocuments: MutableList<String> = mutableListOf()
+    var nRegistros = 0
+
+    // Per cada linea del fitxer json la llegim i la afegim a la llista d'abans.
+    // Y cada 1000 registres fem una pujada al la db per evitar sobrecarregar la memoria.
+    jsonFile.forEachLine {
+        jsonDocuments.add(it)
+
+        nRegistros++
+
+        if (nRegistros == 1000) {
+            coll.insertMany(jsonDocuments.map { Document.parse(it) })
+            nRegistros = 0
+            jsonDocuments = mutableListOf()
+        }
+    }
+
+    // Fem una ultima pujada per asegurar que no queda cap registre sense pujar.
     coll.insertMany(jsonDocuments.map { Document.parse(it) })
 }

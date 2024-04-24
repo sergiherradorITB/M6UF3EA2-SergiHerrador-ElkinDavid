@@ -43,7 +43,7 @@ fun main() {
 // Afegim els productes del document products.json a la db
 fun afegirProductes(coll: MongoCollection<Document>) {
     // Lectura del archivo JSON
-    val jsonFile = File("src/main/JSON/restaurants.json")
+    val jsonFile = File("src/main/JSON/products.json")
     println(jsonFile.absolutePath)
 
     // Creem llista buida i un contador
